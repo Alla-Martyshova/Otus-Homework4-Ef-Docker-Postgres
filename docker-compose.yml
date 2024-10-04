@@ -1,0 +1,43 @@
+services:
+  otus.teaching.promocodefactory.webhost:
+    image: otusteachingpromocodefactorywebhost
+    build:
+      context: .
+      dockerfile: Otus.Teaching.PromoCodeFactory.WebHost/Dockerfile
+    container_name: otus_promocode_factory
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - "ConnectionStrings__HW4PG=Host=pgdatabase;Port=5432;Database=postgres1;Username=postgres;Password=postgres"
+    depends_on: 
+      - pgdatabase
+
+  pgdatabase:
+    container_name: pgdatabase
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - pg_bridge
+ 
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: postgres@test.com
+      PGADMIN_DEFAULT_PASSWORD: postgres
+    ports:
+      - "5050:80"
+    networks:
+      - pg_bridge
+  
+networks:
+  pg_bridge:
+    driver: bridge
